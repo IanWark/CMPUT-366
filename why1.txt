@@ -1,0 +1,17 @@
+Why do the tiles in the second tiling run from 121 to 241?
+The first 121 tiles (0-120) are the first tiling because each tiling is 11x11 so the second tiling starts with 121 and goes to 241, and so on.
+
+Why is the point (0.1,0.1) in the first tile of the first seven tilings, that is, in tiles 0, 121, 242, 363, 484, 605, 726?
+The point is within the boundaries of the tiles, as 0.1 is between 0 and 0.6, as well as between -0.075 and 0.525, -0.15 and 0.45, and so on. Since x and y are equal for both the point therefore the point lies in the first tile for the first seven tilings.
+
+Why is the point (0.1,0.1) in the 13th tile?
+The 8th tiling has moved a full tile diagonally down so now its 13th tile is in the exact same spot as the first tile of the first tiling. -0.6/8*(8) = -0.6, which is a the length of a tile.
+
+Why is the 13th tile in the 8th tiling 859?
+7*121 + 13 - 1 = 859. The 8th tiling starts at 846 (7*121 - 1) then add 13 for the 13th tile.
+
+Why is the largest possible index 967?
+8*121 - 1 = 967. 8 tilings with 121 tiles each, starting at 0.
+
+Why do the second and fourth examples produce very similar sets of indices?
+The distance between the two points is very small so the only tiling that notices the difference is the 6th tile.
