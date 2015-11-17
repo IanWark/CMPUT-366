@@ -2,17 +2,26 @@ from pylab import zeros, sin, cos, normal, random
 from Tilecoder import numTilings, tilecode
 
 # initialize weights appropriately here
-weight = numpy.zeros(121*numTilings)
+weight = zeros(121*numTilings)
 # initialize step size parameter appropriately here
 alpha = 0.1/numTilings
 # initialize your global list of tile indices here
-tileIndices = numpy.zeros(numTilings)
+tileIndices = [-1]*numTilings
     
 def f(x,y):
     # write your linear function approximator here (5 lines or so)
+   tilecode(x,y,tileIndices)
+   weightSum = 0.0
+   for i in tileIndices:
+      weightSum += weight[i]
+   return weightSum
    
 def learn(x,y,target):
     # write your gradient descent learning algorithm here (3 lines or so)
+   tilecode(x,y,tileIndices)
+   func = f(x,y)
+   for j in tileIndices:
+      weight[j] = weight[j] + alpha*(target - func)
 
 def test1():
    for x,y,target in \
