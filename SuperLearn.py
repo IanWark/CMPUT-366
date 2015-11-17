@@ -74,5 +74,6 @@ def test2():
         MSE(10000)
     writeF('f10000')
 
-test1()
+#test1()
+test2()
 

@@ -16,8 +16,8 @@ def printTileCoderIndices(x,y):
     tilecode(x,y,tileIndices)
     print 'Tile indices for input (',x,',',y,') are:', tileIndices
 
-printTileCoderIndices(0.1,0.1)
-printTileCoderIndices(4.0,2.0)
-printTileCoderIndices(5.99,5.99)
-printTileCoderIndices(4.0,2.1)
+#printTileCoderIndices(0.1,0.1)
+#printTileCoderIndices(4.0,2.0)
+#printTileCoderIndices(5.99,5.99)
+#printTileCoderIndices(4.0,2.1)
     
