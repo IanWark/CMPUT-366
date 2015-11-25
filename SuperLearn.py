@@ -2,9 +2,9 @@ from pylab import zeros, sin, cos, normal, random
 from Tilecoder import numTilings, tilecode
 
 # initialize weights appropriately here
-weight = zeros(121*numTilings)
+weight = zeros(81*numTilings)
 # initialize step size parameter appropriately here
-alpha = 0.1/numTilings
+alpha = 0.5/numTilings
 # initialize your global list of tile indices here
 tileIndices = [-1]*numTilings
     
