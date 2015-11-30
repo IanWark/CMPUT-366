@@ -15,6 +15,7 @@ F = [-1]*numTilings
 runSum = 0.0
 for run in xrange(numRuns):
     theta = -0.01*rand(n)
+    traces = -0.01*rand(n)
     returnSum = 0.0
     for episodeNum in xrange(numEpisodes):
         G = 0
@@ -24,25 +25,29 @@ for run in xrange(numRuns):
         # Until s is terminal:
         while s!=-1:
             # Choose action
-            # first equation from mountain-car.pdf
+            # first equation from mountain-car.pdf 
             if numpy.random.rand() <= Emu:    # randomly explore
                 a = random.randint(0, 2)
-            else:                               # greedy action choice
+            else:                             # greedy action choice
                 a = numpy.argmax(actionValue(F,0,theta),actionValue(F,1,theta),actionValue(F,2,theta))
    
-            # Take action, observe r,sp
+            # Take action, observe r,Sp
             r,Sp=mountaincar.sample(s,a)
             G += r
             # Choose next action
             Fp = Tilecoder.tilecode(Sp,F)
-            ap = numpy.argmax(actionValue(Fp,0,theta),actionValue(Fp,1,theta),actionValue(Fp,2,theta))    
+            ap = numpy.argmax(actionValue(Fp,0,theta),actionValue(Fp,1,theta),actionValue(Fp,2,theta)) 
+            
             # Update Q
             # third equation from mountain-car.pdf
             deltaT = r + actionValue(Fp,ap,theta) - actionValue(F,a,theta)
             # fourth equation from mountain-car.pdf
-            eT = 5 #temp because I need to read textbook
+            for component in traces:
+                traces[component] = gamma*lmbda*traces[component]
+            for index in f:
+                traces[index] = 1
             # second equation from mountain-car.pdf
-            theta = theta + alpha*deltaT*eT
+            theta = theta + alpha*deltaT*traces
             
             
             #if sp == -1:
