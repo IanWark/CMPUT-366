@@ -1,23 +1,25 @@
-import numpy
 
 numTilings = 4
+numTiles = 9 * 9 * numTilings
     
 def tilecode(x,y,tileIndices):
-    # write your tilecoder here (5 lines or so)
-    for i in range(numTilings):
-        xNew = x + (i*0.6/4)
-        yNew = y + (i*0.6/4)
-        xTile = numpy.ceil(xNew/0.6) - 1
-        yTile = numpy.ceil(yNew/0.6) - 1
-        tileIndices[i] = i*81 + yTile*9 + xTile
+    x += 1.2 
+    y += 0.07
+
+    for i in range (0, numTilings):
+        xNew = i * (0.2125) / numTilings
+	yNew = i * (0.0175 ) / numTilings 
+        xTile = int( (8 * (x + xNew)/1.7))
+        yTile = int( (8 * (y + yNew)/0.14))
+        tileIndices[i] = int((81 * i) + (9 * yTile) + xTile)
+    
     
 def printTileCoderIndices(x,y):
     tileIndices = [-1]*numTilings
     tilecode(x,y,tileIndices)
-    print 'Tile indices for input (',x,',',y,') are:', tileIndices
+    print 'Tile indices for input (',x,',',y,') are : ', tileIndices
 
-#printTileCoderIndices(0.1,0.1)
-#printTileCoderIndices(4.0,2.0)
-#printTileCoderIndices(5.99,5.99)
-#printTileCoderIndices(4.0,2.1)
-    
+printTileCoderIndices(-1.2,-0.07)
+printTileCoderIndices(0.5,0.07)
+printTileCoderIndices(5.99,5.99)
+printTileCoderIndices(4.0,2.1)
