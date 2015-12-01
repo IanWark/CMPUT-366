@@ -14,10 +14,10 @@ F = [-1]*numTilings
 Fp = [-1]*numTilings
 
 # sums theta values for the indices at a certain action
-def actionValue(F,a,theta):
+def QValue(F,a,theta):
     value = 0
     for index in F:
-        value = value + theta[index+(a*numTiles)] # num tiles is 324 (9*9*4)
+        value = value + theta[index+(a*numTiles)]
     return value
 
 def learn():    
@@ -33,34 +33,31 @@ def learn():
             # Until S is terminal:
             while S!=None:
                 # Choose action
-                # first equation from mountain-car.pdf 
                 tilecode(S,F)
                 if rand() <= Emu:                 # randomly explore
                     a = randint(0, 2)
                     traces = zeros(n)
                 else:                             # greedy action choice
-                    a = argmax([actionValue(F,0,theta),actionValue(F,1,theta),actionValue(F,2,theta)])
-       
+                    a = argmax([QValue(F,0,theta),QValue(F,1,theta),QValue(F,2,theta)])
+                # Replacing traces on indices where feature vector is 1
+                for index in F:
+                    traces[index+(a*numTiles)] = 1                     
                 # Take action, observe r,Sp
                 r,Sp=mountaincar.sample(S,a)
                 G += r
-                # fourth equation from mountain-car.pdf
-                for index in F:
-                    traces[index+(a*numTiles)] = 1          # replacing traces on indices where feature vector is 1                
+                # If terminal action update theta and end episode
                 if Sp == None:
-                    delta = r - actionValue(F,a,theta)
+                    delta = r - QValue(F,a,theta)
                     theta =  theta + alpha*delta*traces
                     break
                 # Choose next action
                 tilecode(Sp,Fp)
-                ap = argmax([actionValue(Fp,0,theta),actionValue(Fp,1,theta),actionValue(Fp,2,theta)]) 
-                # third equation from mountain-car.pdf
-                delta = r + actionValue(Fp,ap,theta) - actionValue(F,a,theta)
-                
-                # second equation from mountain-car.pdf
+                ap = argmax([QValue(Fp,0,theta),QValue(Fp,1,theta),QValue(Fp,2,theta)]) 
+                # Update theta
+                delta = r + QValue(Fp,ap,theta) - QValue(F,a,theta)
                 theta = theta + alpha*delta*traces
-                
-                traces = gamma*lmbda*traces    # decay every component of traces
+                # Decay every component
+                traces = gamma*lmbda*traces
                 S=Sp
                 step += 1
             returnSum += G        
