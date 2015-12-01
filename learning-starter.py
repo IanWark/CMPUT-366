@@ -11,59 +11,65 @@ lmbda = 0.9
 Epi = Emu = epsilon = 0
 n = numTiles * 3
 F = [-1]*numTilings
+Fp = [-1]*numTilings
 
-runSum = 0.0
-for run in xrange(numRuns):
-    theta = -0.01*rand(n)
-    traces = -0.01*rand(n)
-    returnSum = 0.0
-    for episodeNum in xrange(numEpisodes):
-        G = 0
-        
-        S=mountaincar.init()
-        F = Tilecoder.tilecode(S,F)
-        # Until s is terminal:
-        while s!=-1:
-            # Choose action
-            # first equation from mountain-car.pdf 
-            if numpy.random.rand() <= Emu:    # randomly explore
-                a = random.randint(0, 2)
-            else:                             # greedy action choice
-                a = numpy.argmax(actionValue(F,0,theta),actionValue(F,1,theta),actionValue(F,2,theta))
-   
-            # Take action, observe r,Sp
-            r,Sp=mountaincar.sample(s,a)
-            G += r
-            # Choose next action
-            Fp = Tilecoder.tilecode(Sp,F)
-            ap = numpy.argmax(actionValue(Fp,0,theta),actionValue(Fp,1,theta),actionValue(Fp,2,theta)) 
-            
-            # Update Q
-            # third equation from mountain-car.pdf
-            deltaT = r + actionValue(Fp,ap,theta) - actionValue(F,a,theta)
-            # fourth equation from mountain-car.pdf
-            for component in traces:
-                traces[component] = gamma*lmbda*traces[component]
-            for index in f:
-                traces[index] = 1
-            # second equation from mountain-car.pdf
-            theta = theta + alpha*deltaT*traces
-            
-            
-            #if sp == -1:
-                #target = r
-                #Q[s][a] = Q[s][a] + alpha*(target - Q[s][a])                
-            #else:
-                #target = r + (1-(Epi/2))*Q[sp][ap] + (Epi/2)*Q[sp][1-ap]
-                #Q[s][a] = Q[s][a] + alpha*(target - Q[s][a])
-            s=sp
-        returnSum += G        
+# sums theta values for the indices at a certain action
+def actionValue(F,a,theta):
+    value = 0
+    for index in F:
+        value = value + theta[index+(a*numTiles)] # num tiles is 324 (9*9*4)
+    return value
+
+def learn():    
+    runSum = 0.0
+    for run in xrange(numRuns):
+        theta = -0.01*rand(n)
+        returnSum = 0.0
+        for episodeNum in xrange(numEpisodes):
+            step = 0
+            G = 0        
+            traces = zeros(n)
+            S=mountaincar.init()
+            # Until S is terminal:
+            while S!=None:
+                # Choose action
+                # first equation from mountain-car.pdf 
+                tilecode(S,F)
+                if rand() <= Emu:                 # randomly explore
+                    a = randint(0, 2)
+                    traces = zeros(n)
+                else:                             # greedy action choice
+                    a = argmax([actionValue(F,0,theta),actionValue(F,1,theta),actionValue(F,2,theta)])
+       
+                # Take action, observe r,Sp
+                r,Sp=mountaincar.sample(S,a)
+                G += r
+                # fourth equation from mountain-car.pdf
+                for index in F:
+                    traces[index+(a*numTiles)] = 1          # replacing traces on indices where feature vector is 1                
+                if Sp == None:
+                    delta = r - actionValue(F,a,theta)
+                    theta =  theta + alpha*delta*traces
+                    break
+                # Choose next action
+                tilecode(Sp,Fp)
+                ap = argmax([actionValue(Fp,0,theta),actionValue(Fp,1,theta),actionValue(Fp,2,theta)]) 
+                # third equation from mountain-car.pdf
+                delta = r + actionValue(Fp,ap,theta) - actionValue(F,a,theta)
+                
+                # second equation from mountain-car.pdf
+                theta = theta + alpha*delta*traces
+                
+                traces = gamma*lmbda*traces    # decay every component of traces
+                S=Sp
+                step += 1
+            returnSum += G        
     
-        print "Episode: ", episodeNum, "Steps:", step, "Return: ", G
-        returnSum = returnSum + G
-    print "Average return:", returnSum/numEpisodes
-    runSum += returnSum
-print "Overall performance: Average sum of return per run:", runSum/numRuns
+            print "Episode: ", episodeNum, "Steps:", step, "Return: ", G
+            returnSum = returnSum + G
+        print "Average return:", returnSum/numEpisodes
+        runSum += returnSum
+    print "Overall performance: Average sum of return per run:", runSum/numRuns
 
 #Additional code here to write average performance data to files for plotting...
 #You will first need to add an array in which to collect the data
@@ -80,9 +86,6 @@ def writeF():
         fout.write('\n')
     fout.close()
 
-# sums theta values for the indices at a certain action
-def actionValue(F,a,theta):
-    value = 0
-    for index in F:
-        value = value + theta[index+(a*numTiles)] # num tiles is 324 (9*9*4)
-    return value
+
+
+learn()
